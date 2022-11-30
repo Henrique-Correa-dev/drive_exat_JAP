@@ -31,31 +31,31 @@ bool chavear = false;
 
 void init_exat() {
   // Inicializando o TIMER 1
-  cli();                         // Desabilita as interrupções - necessário para ajustar os SFRs
-  TCCR5A = 0;                    // Limpa o Registrador de controle A
-  TCCR5B = 0;                    // Limpa o Registrador de controle B   
-  TIMSK5 |= (1 << TOIE5);        // Habilita a interrupção pelo estouro do TIMER 1, para aumentar o Timer via Software
-  TCNT5 = 0;                     // Zera o valor do registrador de contagem do TIMER 1, parte baixa (automatico pelo hardware)
-  cont_t5ovf = 0;                // Zera o valor do registrador de contagem do TIMER 1, parte alta (criado via software)
-  //TCCR5B |= (1 << CS12);         // configura prescaler para 256: CS12 = 1
-  TCCR5B |= (1 << CS11);         // configura prescaler para 64: CS11 = 1
-  TCCR5B |= (1 << CS10);         // configura prescaler para 64: CS10 = 1
-  sei();                         // Habilita novamente as interrupções
+  cli();                            // Desabilita as interrupções - necessário para ajustar os SFRs
+  TCCR5A = 0;                       // Limpa o Registrador de controle A
+  TCCR5B = 0;                       // Limpa o Registrador de controle B   
+  TIMSK5 |= (1 << TOIE5);           // Habilita a interrupção pelo estouro do TIMER 1, para aumentar o Timer via Software
+  TCNT5 = 0;                        // Zera o valor do registrador de contagem do TIMER 1, parte baixa (automatico pelo hardware)
+  cont_t5ovf = 0;                   // Zera o valor do registrador de contagem do TIMER 1, parte alta (criado via software)
+  //TCCR5B |= (1 << CS12);          // configura prescaler para 256: CS12 = 1
+  TCCR5B |= (1 << CS11);            // configura prescaler para 64: CS11 = 1
+  TCCR5B |= (1 << CS10);            // configura prescaler para 64: CS10 = 1
+  sei();                            // Habilita novamente as interrupções
   
-  attachInterrupt(digitalPinToInterrupt(PINPAD), exat_pad_vect, RISING);  // Liga a interrupção do pino de captura de pulso do padrao em borda de subida
-  attachInterrupt(digitalPinToInterrupt(PINUST1), exat_ust1_vect, FALLING);  // Liga a interrupção do pino de captura de pulso do medidor sob ensaio em borda de subida
-  attachInterrupt(digitalPinToInterrupt(PINUST2), exat_ust2_vect, FALLING);  // Liga a interrupção do pino de captura de pulso do medidor sob ensaio em borda de subida
-  attachInterrupt(digitalPinToInterrupt(PINUST3), exat_ust3_vect, FALLING);  // Liga a interrupção do pino de captura de pulso do medidor sob ensaio em borda de subida
-  attachInterrupt(digitalPinToInterrupt(PINUST4), exat_ust4_vect, FALLING);  // Liga a interrupção do pino de captura de pulso do medidor sob ensaio em borda de subida
+  attachInterrupt(digitalPinToInterrupt(PINPAD), exat_pad_vect, RISING);        // Liga a interrupção do pino de captura de pulso do padrao em borda de subida
+  attachInterrupt(digitalPinToInterrupt(PINUST1), exat_ust1_vect, FALLING);     // Liga a interrupção do pino de captura de pulso do medidor sob ensaio em borda de subida
+  attachInterrupt(digitalPinToInterrupt(PINUST2), exat_ust2_vect, FALLING);     // Liga a interrupção do pino de captura de pulso do medidor sob ensaio em borda de subida
+  attachInterrupt(digitalPinToInterrupt(PINUST3), exat_ust3_vect, FALLING);     // Liga a interrupção do pino de captura de pulso do medidor sob ensaio em borda de subida
+  attachInterrupt(digitalPinToInterrupt(PINUST4), exat_ust4_vect, FALLING);     // Liga a interrupção do pino de captura de pulso do medidor sob ensaio em borda de subida
 }
 
 //  ************  VETORES DE INTERRUPCAO  ************
 
-ISR(TIMER5_OVF_vect) {    // Vetor da interrupção do Timer 1. Gastar o menor tempo possível. Nome do vetor é padrão do AVR-GCC
-  cont_t5ovf++;                // Para cada estouro de timer, soma 1 no contador de 16 bits, para expandir o contador para 32 bits
+ISR(TIMER5_OVF_vect) {              // Vetor da interrupção do Timer 1. Gastar o menor tempo possível. Nome do vetor é padrão do AVR-GCC
+  cont_t5ovf++;                     // Para cada estouro de timer, soma 1 no contador de 16 bits, para expandir o contador para 32 bits
 }
 
-void exat_pad_vect() {    // vetor da interrupção do pino de captura de pulsos do padrão
+void exat_pad_vect() {              // vetor da interrupção do pino de captura de pulsos do padrão
   if (!exat_ruido_pad) {
     exat_ruido_pad = true;  // trava a entrada nesta rotina
     exat_verif_pad = true;  // inicializa rotina de filtro
@@ -75,7 +75,7 @@ void exat_pad_vect() {    // vetor da interrupção do pino de captura de pulsos
   }
 }
 
-void exat_ust1_vect() {   // vetor da interrupção do pino de captura de pulsos da unidade sob ensaio (UST)
+void exat_ust1_vect() {             // vetor da interrupção do pino de captura de pulsos da unidade sob ensaio (UST)
   if (!exat_ruido_ust1) {
     exat_ruido_ust1 = true;  // trava a entrada nesta rotina
     exat_verif_ust1 = true;  // inicializa rotina de filtro
@@ -97,7 +97,7 @@ void exat_ust1_vect() {   // vetor da interrupção do pino de captura de pulsos
   }
 }
 
-void exat_ust2_vect() {   // vetor da interrupção do pino de captura de pulsos da unidade sob ensaio (UST)
+void exat_ust2_vect() {             // vetor da interrupção do pino de captura de pulsos da unidade sob ensaio (UST)
   if (!exat_ruido_ust2) {
     exat_ruido_ust2 = true;  // trava a entrada nesta rotina
     exat_verif_ust2 = true;  // inicializa rotina de filtro
@@ -119,7 +119,7 @@ void exat_ust2_vect() {   // vetor da interrupção do pino de captura de pulsos
   }
 }
 
-void exat_ust3_vect() {   // vetor da interrupção do pino de captura de pulsos da unidade sob ensaio (UST)
+void exat_ust3_vect() {             // vetor da interrupção do pino de captura de pulsos da unidade sob ensaio (UST)
   if (!exat_ruido_ust3) {
     exat_ruido_ust3 = true;  // trava a entrada nesta rotina
     exat_verif_ust3 = true;  // inicializa rotina de filtro
@@ -141,7 +141,7 @@ void exat_ust3_vect() {   // vetor da interrupção do pino de captura de pulsos
   }
 }
 
-void exat_ust4_vect() {   // vetor da interrupção do pino de captura de pulsos da unidade sob ensaio (UST)
+void exat_ust4_vect() {             // vetor da interrupção do pino de captura de pulsos da unidade sob ensaio (UST)
   if (!exat_ruido_ust4) {
     exat_ruido_ust4 = true;  // trava a entrada nesta rotina
     exat_verif_ust4 = true;  // inicializa rotina de filtro
@@ -166,17 +166,17 @@ void exat_ust4_vect() {   // vetor da interrupção do pino de captura de pulsos
 //  ************  ROTINAS DE ENSAIO  ************
 
 void exat_refresh() {
-  exatidao();         // Chama rotina que realiza exatidão, caso tenha sido setado pelo supErvisorio
-  tira_ruido_pad();   // Chama rotina de delay para evitar ruido na entrada de pulso do padrão
-  tira_ruido_ust1();       // Chama rotina de delay para evitar ruido na entrada de pulso
+  exatidao();                       // Chama rotina que realiza exatidão, caso tenha sido setado pelo supErvisorio
+  tira_ruido_pad();                 // Chama rotina de delay para evitar ruido na entrada de pulso do padrão
+  tira_ruido_ust1();                // Chama rotina de delay para evitar ruido na entrada de pulso
   tira_ruido_ust2();
   tira_ruido_ust3();
   tira_ruido_ust4();
 }
 
 void exatidao() {
-  if (exat_start) {  // se pediu para iniciar a rotina de exatidão
-    exat_start = false;  // para entrar aqui somente uma vez por solicitação...
+  if (exat_start) {                 // se pediu para iniciar a rotina de exatidão
+    exat_start = false;             // para entrar aqui somente uma vez por solicitação...
 
       // Inicializando o TIMER 1
       cli();                         // Desabilita as interrupções - necessário para ajustar os SFRs
@@ -185,7 +185,7 @@ void exatidao() {
       TIMSK5 |= (1 << TOIE5);        // Habilita a interrupção pelo estouro do TIMER 1, para aumentar o Timer via Software
       TCNT5 = 0;                     // Zera o valor do registrador de contagem do TIMER 1, parte baixa (automatico pelo hardware)
       cont_t5ovf = 0;                // Zera o valor do registrador de contagem do TIMER 1, parte alta (criado via software)
-      //TCCR5B |= (1 << CS12);         // configura prescaler para 256: CS12 = 1
+      //TCCR5B |= (1 << CS12);       // configura prescaler para 256: CS12 = 1
       TCCR5B |= (1 << CS11);         // configura prescaler para 64: CS11 = 1
       TCCR5B |= (1 << CS10);         // configura prescaler para 64: CS10 = 1
       sei();                         // Habilita novamente as interrupções
@@ -216,22 +216,22 @@ void exatidao() {
       digitalWrite(PINRL1,LOW);
       digitalWrite(PINRL2,HIGH);
     }
-    exat_run = true;  // informa que começamos a exatidão
-    libera_exat_pad = false; // bloqueia a contagem de pulsos do padrão até o medidor UST ligar e pulsar
-    exat_pad_run = true;  // liga a exatidão no padrão
-    exat_ust1_run = true;  // liga a exatidão na ust
-    exat_ust2_run = true;  // liga a exatidão na ust
-    exat_ust3_run = true;  // liga a exatidão na ust
-    exat_ust4_run = true;  // liga a exatidão na ust
+    exat_run = true;                // informa que começamos a exatidão
+    libera_exat_pad = false;        // bloqueia a contagem de pulsos do padrão até o medidor UST ligar e pulsar
+    exat_pad_run = true;            // liga a exatidão no padrão
+    exat_ust1_run = true;           // liga a exatidão na ust
+    exat_ust2_run = true;           // liga a exatidão na ust
+    exat_ust3_run = true;           // liga a exatidão na ust
+    exat_ust4_run = true;           // liga a exatidão na ust
     tini_t = millis();
   }
   if (exat_run) {  // se estamos rodando a rotina de exatidão
     if (!exat_pad_run && !exat_ust1_run  && !exat_ust2_run  && !exat_ust3_run && !exat_ust4_run) {  // se já terminou de coletar pulso do padrão e da ust
-      int32_t dif_pad = exat_pad_fim - exat_pad_ini;  // tempo entre pulsos do padrão
-      int32_t dif_ust1 = exat_ust1_fim - exat_ust1_ini;  // tempo entre pulsos da ust
-      int32_t dif_ust2 = exat_ust2_fim - exat_ust2_ini;  // tempo entre pulsos da ust
-      int32_t dif_ust3 = exat_ust3_fim - exat_ust3_ini;  // tempo entre pulsos da ust
-      int32_t dif_ust4 = exat_ust4_fim - exat_ust4_ini;  // tempo entre pulsos da ust
+      int32_t dif_pad = exat_pad_fim - exat_pad_ini;      // tempo entre pulsos do padrão
+      int32_t dif_ust1 = exat_ust1_fim - exat_ust1_ini;   // tempo entre pulsos da ust
+      int32_t dif_ust2 = exat_ust2_fim - exat_ust2_ini;   // tempo entre pulsos da ust
+      int32_t dif_ust3 = exat_ust3_fim - exat_ust3_ini;   // tempo entre pulsos da ust
+      int32_t dif_ust4 = exat_ust4_fim - exat_ust4_ini;   // tempo entre pulsos da ust
 
       /*Serial.print("incio PADRÃO: ");
       Serial.print(exat_pad_ini);
@@ -268,14 +268,14 @@ void exatidao() {
 
       tfim_t = millis() - tini_t;
 
-      Serial.println(tfim_t);
+      /*Serial.println(tfim_t);
       Serial.print("ERRO 1: ");
       Serial.print(erro_ust1,3);
-      Serial.println("%");
+      Serial.println("%");*/
       //Serial.println((dif_pad - last_value_pad), DEC);
       //Serial.println((dif_ust1 - last_value_ust), DEC);
       //Serial.println("%\n");
-      last_value_pad = dif_pad;
+      /*last_value_pad = dif_pad;
       last_value_ust = dif_ust1;
       Serial.print("ERRO 2: ");
       Serial.print(erro_ust2,3);
@@ -285,7 +285,7 @@ void exatidao() {
       Serial.println("%");
       Serial.print("ERRO 4: ");
       Serial.print(erro_ust4,3);
-      Serial.println("%\n");
+      Serial.println("%\n");*/
 
       status_ust = (erro_abs1 <= ERRO_MAX_EXAT);  // teste para definir se o medidor foi aprovado ou reprovado
       char errofim[17];  // cria o bufer para formatar o erro
@@ -308,7 +308,7 @@ void exatidao() {
         Serial.print("");
       }
       exat_run = false;
-      exat_start = true;
+      //exat_start = true;
     } else if ((millis() - exat_tmout_init) > TOUTEXAT) {  // verifica se deu timeout da exatidão
       Serial.println(exat_ust1_run);
       Serial.println(exat_ust2_run);
@@ -356,7 +356,7 @@ void exatidao() {
       erro_ust2 = -100.0;
       erro_ust3 = -100.0;
       erro_ust4 = -100.0;
-      exat_start = true;
+      //exat_start = true;
     }
   }
 }
@@ -468,13 +468,11 @@ void serialEventLoop(){
     if(comandoSerial == true){
         comandoSerial = false;
         if (val == 0x7f && calc_checksum(val,cmd,rw,tam,arg) == check){
-            //Serial.println("Validado");
 
             //AJUSTAR GRANDEZAS
             switch (cmd){
                 case 0x51:
                     if(rw == 0x01){
-                        //Serial.println("INICIANDO EXAT");
                         char _cmd = cmd;
                         char _rw = rw;
                         char _tam = 0x01;
@@ -515,10 +513,12 @@ void serialEventLoop(){
                     break;
             }
         }
+
         /*for(int i=0; i<pcBufRxTm; i++){
             Serial.print(pcBufRx[i],HEX);
         }
         Serial.println("");*/
+
         memset(pcBufRx, 0, pcBufRxTm); // Esvazia o vetor inputString
         pcBufRxTm = 0;
     }
@@ -537,7 +537,7 @@ void setup(){
   Serial.begin(115200);
   init_exat();
   init_pin();
-  exat_start = true;
+  //exat_start = true;
 }
 
 void loop(){
